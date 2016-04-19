@@ -10,6 +10,8 @@ fi
 if [ -f conda-channels.txt ]; then
     puts-step "Installing conda channels"
     cat conda-channels.txt | xargs -I {} conda config --add channels {}
+    echo "Active channels:" | indent
+    conda config --get channels | indent
 fi
 
 if [ -f conda-requirements.txt ]; then
