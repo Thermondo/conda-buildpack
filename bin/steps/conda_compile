@@ -8,7 +8,7 @@ if [ ! -d /app/.heroku/miniconda ]; then
 fi
 
 if [ -f conda-channels.txt ]; then
-    puts-step "Installing conda channels"
+    puts-step "Adding custom channels to Conda"
     cat conda-channels.txt | xargs -I {} conda config --add channels {}
     echo "Active channels:" | indent
     conda config --get channels | indent
