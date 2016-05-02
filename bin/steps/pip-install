@@ -1,0 +1,18 @@
+# Install dependencies with Pip.
+puts-cmd "pip install -r requirements.txt"
+
+set +e
+pip install -r requirements.txt --exists-action=w --src=./.heroku/src --disable-pip-version-check --no-cache-dir 2>&1 | tee $WARNINGS_LOG | cleanup | indent
+PIP_STATUS="${PIPESTATUS[0]}"
+set -e
+
+if [[ ! $PIP_STATUS -eq 0 ]]; then
+    exit 1
+fi
+
+
+# Smart Requirements handling
+cp requirements.txt .heroku/requirements-declared.txt
+pip freeze --disable-pip-version-check > .heroku/requirements-installed.txt
+
+echo

@@ -1,12 +1,22 @@
+
 #!/usr/bin/env bash
+
+# The Heroku Python Buildpack. This script accepts parameters for a build
+# directory, a cache directory, and a directory for app environment variables.
+
+# Warning: there are a few hacks in this script to accommodate excellent builds
+# on Heroku. No guarantee for external compatibility is made. However,
+# everything should work fine outside of the Heroku environment, if the
+# environment is setup correctly.
 
 # Usage:
 #
-#     $ bin/compile <build-dir> <cache-dir>
-
+#     $ bin/compile <build-dir> <cache-dir> <env-path>
 
 # Fail fast and fail hard.
 set -eo pipefail
+
+[ "$BUILDPACK_XTRACE" ] && set -o xtrace
 
 # Prepend proper path for virtualenv hackery. This will be deprecated soon.
 export PATH=:/usr/local/bin:$PATH
@@ -16,6 +26,7 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
+ENV_DIR=$3
 
 CACHED_DIRS=".heroku"
 
@@ -74,7 +85,13 @@ set -e
 mkdir -p $(dirname $PROFILE_PATH)
 
 # Actuall do the conda steps.
-source $BIN_DIR/steps/conda_compile
+source $BIN_DIR/steps/conda
+
+# Uninstall removed dependencies with Pip.
+source $BIN_DIR/steps/pip-uninstall
+
+# Install dependencies with Pip.
+source $BIN_DIR/steps/pip-install
 
 # ### Finalize
 #

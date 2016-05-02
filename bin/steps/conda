@@ -19,8 +19,8 @@ if [ ! -d /app/.heroku/miniconda ]; then
     export LD_LIBRARY_PATH="${CONDA_PATH}lib:$LD_LIBRARY_PATH"
     export PKG_CONFIG_PATH="${CONDA_PATH}lib/pkgconfig:$PKG_CONFIG_PATH"
 
-    conda update conda --yes | indent
-    conda install pip --yes | indent
+    conda update conda pip --yes | indent
+    pip install -U pip-pop --exists-action=w --src=./.heroku/src --disable-pip-version-check --no-cache-dir | indent
 fi
 
 if [ -f conda-channels.txt ]; then
@@ -36,12 +36,4 @@ if [ -f conda-requirements.txt ]; then
 fi
 
 puts-step "Clean Conda cache"
-conda clean --all --yes | indent
-
-if [ -f requirements.txt ]; then
-    puts-step "Installing dependencies using Pip"
-    pip install -r requirements.txt --exists-action=w --src=./.heroku/src --disable-pip-version-check --no-cache-dir | indent
-fi
-
-# Clean up the installation environment .
-conda clean -pt --yes > /dev/null
+conda clean --all --yes > /dev/null
