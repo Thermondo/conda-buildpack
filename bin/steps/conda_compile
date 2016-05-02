@@ -2,11 +2,22 @@
 
 set -e
 
+CONDA_PATH="/app/.heroku/miniconda/"
+
 if [ ! -d /app/.heroku/miniconda ]; then
     puts-step "Preparing Python/Miniconda3 Environment (latest)"
     curl -sRo Miniconda-3.7.3-Linux-x86_64.sh http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda-3.7.3-Linux-x86_64.sh -p /app/.heroku/miniconda/ -b | indent
+    bash Miniconda-3.7.3-Linux-x86_64.sh -p $CONDA_PATH -b | indent
     rm -fr Miniconda-3.7.3-Linux-x86_64.sh
+
+    export PATH="${CONDA_PATH}bin:$PATH"
+    export PYTHONUNBUFFERED=1
+    export LANG=en_US.UTF-8
+    export C_INCLUDE_PATH="${CONDA_PATH}include:$C_INCLUDE_PATH"
+    export CPLUS_INCLUDE_PATH="${CONDA_PATH}include:$CPLUS_INCLUDE_PATH"
+    export LIBRARY_PATH="${CONDA_PATH}lib:$LIBRARY_PATH"
+    export LD_LIBRARY_PATH="${CONDA_PATH}lib:$LD_LIBRARY_PATH"
+    export PKG_CONFIG_PATH="${CONDA_PATH}lib/pkgconfig:$PKG_CONFIG_PATH"
 
     conda update conda --yes | indent
     conda install pip --yes | indent
